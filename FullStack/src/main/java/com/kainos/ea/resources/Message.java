@@ -11,6 +11,7 @@ public class Message {
     private double startingSalary;
     private boolean isManager;
     private String department;
+
     @JsonCreator
     public Message(@JsonProperty("fname") String fname,
                    @JsonProperty("lname") String lname,
@@ -31,6 +32,8 @@ public class Message {
         this.setIsManager(isManager);
         this.setDepartment(department);
     }
+
+
     public void setFname(String fname) { this.fname = fname; }
     public void setLname(String lname) { this.lname = lname; }
     public void setPostcode(String postcode) { this.postcode = postcode; }

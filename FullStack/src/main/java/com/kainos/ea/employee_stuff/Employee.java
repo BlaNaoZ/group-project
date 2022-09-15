@@ -1,6 +1,8 @@
 package com.kainos.ea.employee_stuff;
 
-public class Employee {
+public class Employee implements Payable{
+
+    private int number;
     private String fname;
     private String lname;
     private String postcode;
@@ -11,15 +13,17 @@ public class Employee {
     private boolean isManager;
     private String department;
 
-    public Employee(String fname,
-                   String lname,
-                   String postcode,
-                   String address,
-                   String nin,
-                   String bankAccount,
-                   double startingSalary,
-                   boolean isManager,
-                   String department) {
+    public Employee(int number,
+                    String fname,
+                    String lname,
+                    String postcode,
+                    String address,
+                    String nin,
+                    String bankAccount,
+                    double startingSalary,
+                    boolean isManager,
+                    String department) {
+        this.setNumber(number);
         this.setFname(fname);
         this.setLname(lname);
         this.setPostcode(postcode);;
@@ -76,8 +80,27 @@ public class Employee {
         return department;
     }
 
-    public double calcPay(){
-        return getStartingSalary() / 12;
+    public int calcPay(){
+        return (int) (getStartingSalary() / 12);
     }
 
+    @Override
+    public String getName() {
+        return fname + " " + lname;
+    }
+
+    @Override
+    public void setName(String name) {
+        String[] splitName = name.split(" ");
+        this.fname = splitName[0];
+        this.lname = splitName[1];
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 }
