@@ -3,6 +3,7 @@ package com.kainos.ea.resources;
 
 import com.kainos.ea.WebServiceApplication;
 import com.kainos.ea.employee_stuff.Employee;
+import com.kainos.ea.employee_stuff.SalesEmployee;
 import io.swagger.annotations.Api;
 import org.eclipse.jetty.util.ajax.JSON;
 
@@ -280,6 +281,61 @@ public class APIService {
                 financeR.add(String.format(emp.getNumber() + ": " + emp.getFname() + " " + emp.getLname() + ", £%,.2f.", (float) emp.calcPay()));
 
                 //allHREmployees.add(total);
+
+            }
+
+            return financeR;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GET
+    @Path("/getHighestEarningEmployee")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getHighestEarningSalesEmployee() {
+        try {
+            Connection con = WebServiceApplication.getConnection();
+            Statement st = con.createStatement();
+            //st.execute("USE ddata_LauraP");
+            ResultSet rs = st.executeQuery("Select * from SalesEmployee WHERE sales_total IN (SELECT MAX(sales_total) FROM SalesEmployee);");
+            //List<Employee> allEmploy = new ArrayList();
+            List<String> financeR = new ArrayList<>();
+
+            int empNumber = 0;
+            float commissionRate = 0.0f;
+            int salesTotal = 0;
+
+            while (rs.next()) {
+                empNumber = rs.getInt("number");
+                commissionRate = rs.getFloat("commission_rate");
+                salesTotal = rs.getInt("sales_total");
+
+
+                //allHREmployees.add(total);
+
+            }
+
+            String sqlGetEmployee = "SELECT * FROM Employee WHERE number = " + empNumber + ";";
+
+            ResultSet rsEmp = st.executeQuery(sqlGetEmployee);
+
+            while(rsEmp.next()) {
+                SalesEmployee salesEmp = new SalesEmployee(empNumber,
+                        rsEmp.getString("fname"),
+                        rsEmp.getString("lname"),
+                        rsEmp.getString("postcode"),
+                        rsEmp.getString("address"),
+                        rsEmp.getString("nin"),
+                        rsEmp.getString("bank_account"),
+                        rsEmp.getInt("starting_salary"),
+                        rsEmp.getBoolean("isManager"),
+                        rsEmp.getString("department"),
+                        commissionRate,
+                        salesTotal);
+
+                financeR.add(String.format(salesEmp.getNumber() + ": " + salesEmp.getFname() + " " + salesEmp.getLname() + " " + salesEmp.getSalesTotal()));
 
             }
 
