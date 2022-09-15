@@ -232,13 +232,16 @@ public class APIService {
                 number = ID.getInt(1);
             }
 
+            System.err.println(number);
+
             String sqlSales = "INSERT INTO SalesEmployee (number, commission_rate, sales_total) VALUES " +
-                    "(?,?, ?);";
+                    "(?,?,?);";
 
             PreparedStatement statementSales = con.prepareStatement(sqlSales);
-            statement.setString(1, String.valueOf(number));
-            statement.setString(2, commissionRate);
-            statement.setString(3, salesTotal);
+            statementSales.setInt(1, number);
+            statementSales.setString(2, commissionRate);
+            statementSales.setString(3, salesTotal);
+            statementSales.execute();
 
 
             return "Data inserted successfully";
