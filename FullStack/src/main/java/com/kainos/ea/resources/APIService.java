@@ -206,7 +206,7 @@ public class APIService {
                         rs.getInt("starting_salary"),
                         rs.getBoolean("isManager"),
                         rs.getString("department"));
-                financeR.add(String.format(emp.getNumber() + ": " + emp.getFname() + emp.getLname() + ", £%,.2f.", (float) emp.calcPay()));
+                financeR.add(String.format(emp.getNumber() + ": " + emp.getFname() + " " + emp.getLname() + ", £%,.2f.", (float) emp.calcPay()));
 
                 //allHREmployees.add(total);
 
