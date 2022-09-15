@@ -99,34 +99,27 @@ public class APIService {
     @GET
     @Path("/report/hr")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getHREmployees() {
+    public MessageList getHREmployees() {
         try {
             Connection con = WebServiceApplication.getConnection();
             Statement st = con.createStatement();
             //st.execute("USE ddata_LauraP");
             ResultSet rs = st.executeQuery("Select * from Employee where department = 'HR'");
-            List<String> allHREmployees = new ArrayList();
+            List<Message> allHREmployees = new ArrayList();
             while (rs.next()) {
-                String number = String.valueOf(rs.getInt("number"));
-                String fname = rs.getString("fname");
-                String lname = rs.getString("lname");
-                String post = rs.getString("postcode");
-                String address = rs.getString("address");
-                String nin = rs.getString("nin");
-                String bank_account = rs.getString("bank_account");
-                String  starting_salary = String.valueOf(rs.getInt("starting_salary"));
-                String isManager = String.valueOf(rs.getInt("isManager"));
-                String department = rs.getString("department");
-
-                String total = number + " " + fname + " "
-                        + lname + " " +post + " " + address +" " + nin
-                        + " " + bank_account + " " + starting_salary+" "+
-                        isManager + " " + department;
-                allHREmployees.add(total);
-
+                Message mess = new Message(rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("postcode"),
+                        rs.getString("address"),
+                        rs.getString("nin"),
+                        rs.getString("bank_account"),
+                        rs.getDouble("starting_salary"),
+                        rs.getBoolean("isManager"),
+                        rs.getString("department"));
+                allHREmployees.add(mess);
             }
 
-            return JSON.toString(allHREmployees);
+            return new MessageList(allHREmployees);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -297,7 +290,7 @@ public class APIService {
     @GET
     @Path("/getHighestEarningEmployee")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getHighestEarningSalesEmployee() {
+    public Message getHighestEarningSalesEmployee() {
         try {
             Connection con = WebServiceApplication.getConnection();
             Statement st = con.createStatement();
@@ -324,6 +317,8 @@ public class APIService {
 
             ResultSet rsEmp = st.executeQuery(sqlGetEmployee);
 
+            Message newMessage = null;
+
             while(rsEmp.next()) {
                 SalesEmployee salesEmp = new SalesEmployee(empNumber,
                         rsEmp.getString("fname"),
@@ -338,11 +333,22 @@ public class APIService {
                         commissionRate,
                         salesTotal);
 
+                newMessage = new MessageSales(rsEmp.getString("fname"),
+                        rsEmp.getString("lname"),
+                        rsEmp.getString("postcode"),
+                        rsEmp.getString("address"),
+                        rsEmp.getString("nin"),
+                        rsEmp.getString("bank_account"),
+                        rsEmp.getInt("starting_salary"),
+                        rsEmp.getBoolean("isManager"),
+                        rsEmp.getString("department"),
+                        commissionRate,
+                        salesTotal);
                 financeR.add(String.format(salesEmp.getNumber() + ": " + salesEmp.getFname() + " " + salesEmp.getLname() + " " + salesEmp.getSalesTotal()));
 
             }
 
-            return financeR;
+            return newMessage;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
