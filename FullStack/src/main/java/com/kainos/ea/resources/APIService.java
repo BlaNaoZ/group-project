@@ -2,6 +2,7 @@ package com.kainos.ea.resources;
 
 
 import com.kainos.ea.WebServiceApplication;
+import com.kainos.ea.employee_stuff.Employee;
 import io.swagger.annotations.Api;
 import org.eclipse.jetty.util.ajax.JSON;
 
@@ -182,5 +183,40 @@ public class APIService {
         return  "Something went wrong. Database not updated.";
     }
 
+
+    @GET
+    @Path("/finace/report")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getFinanceReport() {
+        try {
+            Connection con = WebServiceApplication.getConnection();
+            Statement st = con.createStatement();
+            //st.execute("USE ddata_LauraP");
+            ResultSet rs = st.executeQuery("Select * from Employee");
+            //List<Employee> allEmploy = new ArrayList();
+            List<String> financeR = new ArrayList<>();
+            while (rs.next()) {
+                Employee emp = new Employee(rs.getInt("number"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("postcode"),
+                        rs.getString("address"),
+                        rs.getString("nin"),
+                        rs.getString("bank_account"),
+                        rs.getInt("starting_salary"),
+                        rs.getBoolean("isManager"),
+                        rs.getString("department"));
+                financeR.add(String.format(emp.getNumber() + ": " + emp.getFname() + emp.getLname() + ", £%,.2f.", (float) emp.calcPay()));
+
+                //allHREmployees.add(total);
+
+            }
+
+            return financeR;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
