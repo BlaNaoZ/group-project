@@ -5,7 +5,6 @@ import com.kainos.ea.WebServiceApplication;
 import com.kainos.ea.employee_stuff.Employee;
 import com.kainos.ea.employee_stuff.SalesEmployee;
 import io.swagger.annotations.Api;
-import org.eclipse.jetty.util.ajax.JSON;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -236,16 +235,16 @@ public class APIService {
 
 
     @GET
-    @Path("/finace/report")
+    @Path("/finance/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getFinanceReport() {
+    public MessageList getFinanceReport() {
         try {
             Connection con = WebServiceApplication.getConnection();
             Statement st = con.createStatement();
             //st.execute("USE ddata_LauraP");
             ResultSet rs = st.executeQuery("Select * from Employee");
             //List<Employee> allEmploy = new ArrayList();
-            List<String> financeR = new ArrayList<>();
+            List<Message> allHREmployees = new ArrayList<>();
             while (rs.next()) {
                 Employee emp = new Employee(rs.getInt("number"),
                         rs.getString("fname"),
@@ -257,13 +256,23 @@ public class APIService {
                         rs.getInt("starting_salary"),
                         rs.getBoolean("isManager"),
                         rs.getString("department"));
-                financeR.add(String.format(emp.getNumber() + ": " + emp.getFname() + " " + emp.getLname() + ", £%,.2f.", (float) emp.calcPay()));
+
+                Message mess = new Message(rs.getString("fname"),
+                            rs.getString("lname"),
+                            rs.getString("postcode"),
+                            rs.getString("address"),
+                            rs.getString("nin"),
+                            rs.getString("bank_account"),
+                            emp.calcPay(),
+                            rs.getBoolean("isManager"),
+                            rs.getString("department"));
+                allHREmployees.add(mess);
 
                 //allHREmployees.add(total);
 
             }
 
-            return financeR;
+            return new MessageList(allHREmployees);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
